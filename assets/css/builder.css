@@ -1,0 +1,153 @@
+/**
+ * The link builder form on the plugin's admin screen: layout, with admin.css adding the WP Sunshine
+ * look on top.
+ */
+
+.sunshine-utm-builder {
+	max-width: 760px;
+}
+
+.sunshine-utm-builder [hidden] {
+	display: none !important;
+}
+
+.sunshine-utm-builder__field {
+	margin: 0 0 1.25em;
+}
+
+.sunshine-utm-builder label {
+	display: block;
+	margin: 0 0 0.35em;
+	font-weight: 600;
+}
+
+.sunshine-utm-builder input[type="text"],
+.sunshine-utm-builder input[type="url"],
+.sunshine-utm-builder select,
+.sunshine-utm-builder textarea {
+	display: block;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.sunshine-utm-builder__tags {
+	display: grid;
+	grid-template-columns: repeat( auto-fit, minmax( 240px, 1fr ) );
+	gap: 0 1.5em;
+}
+
+.sunshine-utm-builder__key {
+	margin-left: 0.25em;
+	font-size: 0.8em;
+	font-weight: 400;
+	opacity: 0.75;
+}
+
+.sunshine-utm-builder__help {
+	margin: 0.35em 0 0;
+	font-size: 0.875em;
+	line-height: 1.5;
+	opacity: 0.85;
+}
+
+.sunshine-utm-builder__examples {
+	display: block;
+}
+
+.sunshine-utm-builder__more {
+	margin: 0 0 1.5em;
+}
+
+.sunshine-utm-builder__more summary {
+	cursor: pointer;
+}
+
+.sunshine-utm-builder__more[open] summary {
+	margin-bottom: 1em;
+}
+
+.sunshine-utm-builder__result {
+	padding: 1.25em;
+	border: 1px solid rgba( 128, 128, 128, 0.35 );
+	border-radius: 8px;
+}
+
+.sunshine-utm-builder__link {
+	font-family: Menlo, Consolas, monospace;
+	font-size: 0.875em;
+	word-break: break-all;
+}
+
+.sunshine-utm-builder__status,
+.sunshine-utm-builder__format {
+	margin: 0.5em 0 0;
+	font-size: 0.875em;
+}
+
+.sunshine-utm-builder__status:empty {
+	display: none;
+}
+
+.sunshine-utm-builder__channel {
+	margin: 0.5em 0 0;
+	font-size: 0.875em;
+}
+
+.sunshine-utm-builder__channel.is-unassigned {
+	padding: 0.5em 0.75em;
+	border-left: 3px solid #d63638;
+	background: rgba( 214, 54, 56, 0.06 );
+}
+
+.sunshine-utm-builder__actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5em;
+	margin-top: 1em;
+}
+
+.sunshine-utm-builder__shorteners {
+	padding: 0;
+	border: 0;
+}
+
+.sunshine-utm-builder__shorteners legend {
+	margin: 0 0 0.35em;
+	padding: 0;
+	font-weight: 600;
+}
+
+.sunshine-utm-builder .sunshine-utm-builder__shorteners label {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35em;
+	margin: 0 1.25em 0.35em 0;
+	font-weight: normal;
+}
+
+.sunshine-utm-builder__reset {
+	padding: 0.25em;
+	border: 0;
+	background: none;
+	color: inherit;
+	font: inherit;
+	font-size: 0.875em;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.sunshine-utm-builder__short {
+	margin-top: 1em;
+}
+
+.sunshine-utm-builder__short-row {
+	display: flex;
+	gap: 0.5em;
+}
+
+.sunshine-utm-builder__short-row input {
+	flex: 1;
+	min-width: 0;
+	font-family: Menlo, Consolas, monospace;
+}
