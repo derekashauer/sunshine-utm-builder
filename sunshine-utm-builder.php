@@ -1,7 +1,6 @@
 <?php
 /**
  * Plugin Name: Sunshine UTM Builder
- * Plugin URI: https://wpsunshine.com/plugins/utm-builder/
  * Description: Build UTM links one at a time or hundreds at once, with GA4 channel checks, QR codes, and click-counting short links on your own domain.
  * Version: 1.0.0
  * Requires at least: 6.0

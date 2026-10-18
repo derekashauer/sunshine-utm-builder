@@ -449,15 +449,6 @@ class Sunshine_UTM_Admin {
 		);
 	}
 
-	protected function check_ajax() {
-		if ( ! check_ajax_referer( self::NONCE, 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'This page is out of date. Reload it and try again.', 'sunshine-utm-builder' ) ), 403 );
-		}
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'You do not have permission to do that.', 'sunshine-utm-builder' ) ), 403 );
-		}
-	}
-
 	/**
 	 * A preset's tags with tokens filled in for the link in the builder.
 	 */
@@ -478,8 +469,13 @@ class Sunshine_UTM_Admin {
 	 * checks here: those only run when the batch is created.
 	 */
 	public function ajax_bulk_preview() {
-		$this->check_ajax();
-		$result = Sunshine_UTM_Bulk::rows( $this->bulk_input( wp_unslash( $_POST ) ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing -- sanitized in bulk_input(); nonce checked in check_ajax().
+		if ( ! check_ajax_referer( self::NONCE, 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'This page is out of date. Reload it and try again.', 'sunshine-utm-builder' ) ), 403 );
+		}
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to do that.', 'sunshine-utm-builder' ) ), 403 );
+		}
+		$result = Sunshine_UTM_Bulk::rows( $this->bulk_input( wp_unslash( $_POST ) ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized in bulk_input().
 		if ( is_wp_error( $result ) ) {
 			wp_send_json_error( array( 'message' => $result->get_error_message() ) );
 		}
@@ -500,8 +496,13 @@ class Sunshine_UTM_Admin {
 	}
 
 	public function ajax_bulk_create() {
-		$this->check_ajax();
-		$post   = wp_unslash( $_POST ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing -- sanitized in bulk_input(); nonce checked in check_ajax().
+		if ( ! check_ajax_referer( self::NONCE, 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'This page is out of date. Reload it and try again.', 'sunshine-utm-builder' ) ), 403 );
+		}
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to do that.', 'sunshine-utm-builder' ) ), 403 );
+		}
+		$post   = wp_unslash( $_POST ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized in bulk_input().
 		$input  = $this->bulk_input( $post );
 		$result = Sunshine_UTM_Bulk::rows( $input );
 		if ( is_wp_error( $result ) ) {
@@ -588,11 +589,14 @@ class Sunshine_UTM_Admin {
 	}
 
 	public function ajax_link_note() {
-		$this->check_ajax();
-		// phpcs:disable WordPress.Security.NonceVerification.Missing -- checked in check_ajax().
+		if ( ! check_ajax_referer( self::NONCE, 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'This page is out of date. Reload it and try again.', 'sunshine-utm-builder' ) ), 403 );
+		}
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'You do not have permission to do that.', 'sunshine-utm-builder' ) ), 403 );
+		}
 		$link_id = isset( $_POST['link_id'] ) ? absint( $_POST['link_id'] ) : 0;
 		$note    = isset( $_POST['note'] ) ? sanitize_textarea_field( wp_unslash( $_POST['note'] ) ) : '';
-		// phpcs:enable
 		if ( ! $link_id || ! Sunshine_UTM_Batches::update_link_note( $link_id, $note ) ) {
 			wp_send_json_error( array( 'message' => __( 'The note could not be saved.', 'sunshine-utm-builder' ) ) );
 		}

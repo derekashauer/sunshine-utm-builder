@@ -112,7 +112,7 @@ class Sunshine_UTM_Conversion_Bridge {
 
 	public function redirect_tool() {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- read-only redirect.
-		if ( ! function_exists( 'CB' ) || ! isset( $_GET['page'], $_GET['tab'], $_GET['tool'] ) || 'tools' !== $_GET['tab'] || 'utm-builder' !== $_GET['tool'] ) {
+		if ( ! function_exists( 'CB' ) || ! current_user_can( 'manage_options' ) || ! isset( $_GET['page'], $_GET['tab'], $_GET['tool'] ) || 'tools' !== $_GET['tab'] || 'utm-builder' !== $_GET['tool'] ) {
 			return;
 		}
 		$slug = method_exists( CB(), 'get_white_label_slug' ) ? CB()->get_white_label_slug() : 'conversion_bridge';
