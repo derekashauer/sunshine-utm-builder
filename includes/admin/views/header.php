@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 
 $header_links = array(
 	'documentation' => array(
-		'url'   => 'https://wpsunshine.com/support/?utm_source=plugin&utm_medium=header&utm_campaign=utm-builder',
+		'url'   => 'https://wpsunshine.com/doccat/utm-builder/?utm_source=plugin&utm_medium=header&utm_campaign=utm-builder',
 		'label' => __( 'Documentation', 'sunshine-utm-builder' ),
 	),
 	'review'        => array(

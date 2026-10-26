@@ -122,7 +122,7 @@ $chart_width = count( $daily ) * $bar_width;
 				<span class="sunshine-utm-ending__base"><?php echo esc_html( $base ); ?></span>
 				<input type="text" id="sunshine-utm-new-code" name="new_code" value="<?php echo esc_attr( $short_link['code'] ); ?>" maxlength="50" spellcheck="false" autocomplete="off">
 			</div>
-		<?php Sunshine_UTM_Admin::option_row_close( __( 'Make it something people can read and type, like spring-sale. Lowercase letters, numbers and dashes. If you change it, the old ending stops working, so only change it before the link is shared.', 'sunshine-utm-builder' ) ); ?>
+		<?php Sunshine_UTM_Admin::option_row_close( __( 'Make it something people can read and type, like spring-sale. Lowercase letters, numbers and dashes. If you change it, the old ending stops working, so only change it before the link is shared.', 'sunshine-utm-builder' ) . ' ' . Sunshine_UTM_Admin::doc_link( 'short-links-on-your-own-domain' ) ); ?>
 
 		<?php Sunshine_UTM_Admin::option_row_open( __( 'Goes to', 'sunshine-utm-builder' ), 'sunshine-utm-new-url' ); ?>
 			<input type="url" id="sunshine-utm-new-url" name="url" value="<?php echo esc_attr( $short_link['url'] ); ?>" class="large-text code" spellcheck="false">

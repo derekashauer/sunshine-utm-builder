@@ -101,7 +101,9 @@ $campaign_name = function ( $campaign ) {
 				if ( '' !== $list_search || null !== $list_campaign ) {
 					esc_html_e( 'No short links match.', 'sunshine-utm-builder' );
 				} else {
-					esc_html_e( 'No short links yet. Choose "Your site" under "Shorten with" when you build a link, and its clicks show up here.', 'sunshine-utm-builder' );
+					/* translators: %s: this site's domain. */
+					echo esc_html( sprintf( __( 'No short links yet. Choose %s under "Shorten with" when you build a link, and its clicks show up here.', 'sunshine-utm-builder' ), Sunshine_UTM_Shortener::label( 'site' ) ) );
+					echo ' ' . Sunshine_UTM_Admin::doc_link( 'short-links-on-your-own-domain' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in doc_link().
 				}
 				?>
 			</p>
@@ -156,6 +158,7 @@ $campaign_name = function ( $campaign ) {
 </section>
 <p class="sunshine-utm-table__note">
 	<?php esc_html_e( 'Clicks from bots and link previews (like the one Facebook makes when you post a link) aren\'t counted.', 'sunshine-utm-builder' ); ?>
+	<?php echo Sunshine_UTM_Admin::doc_link( 'short-link-clicks-vs-google-analytics', __( 'Why clicks don\'t match Google Analytics', 'sunshine-utm-builder' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in doc_link(). ?>
 	<?php if ( $conversions ) : ?>
 		<?php
 		/* translators: %s: Conversion Bridge, or the name it's white labeled with. */

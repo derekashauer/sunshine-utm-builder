@@ -21,7 +21,7 @@ if ( ! Sunshine_UTM_URL_Builder::is_valid_url( $prefill ) ) {
 		Sunshine_UTM_Admin::panel_open(
 			'builder',
 			__( 'Build a link', 'sunshine-utm-builder' ),
-			array( 'intro' => __( 'Fill in the tags and your link updates as you type. Copy it into your email, ad or post, and the visits it brings show up in Google Analytics under these names.', 'sunshine-utm-builder' ) )
+			array( 'intro' => __( 'Fill in the tags and your link updates as you type. Copy it into your email, ad or post, and the visits it brings show up in Google Analytics under these names.', 'sunshine-utm-builder' ) . ' ' . Sunshine_UTM_Admin::doc_link( 'how-to-build-a-utm-link-in-wordpress' ) )
 		);
 		$builder_html = $plugin->render_builder(
 			array(

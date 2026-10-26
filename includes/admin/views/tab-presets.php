@@ -21,7 +21,7 @@ $values  = $editing ? $editing : array_fill_keys( array_merge( array( 'name' ), 
 		Sunshine_UTM_Admin::panel_open(
 			'preset-form',
 			$editing ? __( 'Edit preset', 'sunshine-utm-builder' ) : __( 'Add a preset', 'sunshine-utm-builder' ),
-			array( 'intro' => $editing ? '' : __( 'A preset saves tags you use a lot, so every link for a campaign or channel is spelled the same way. Pick it in the Link Builder or Bulk Builder to fill in the tags.', 'sunshine-utm-builder' ) )
+			array( 'intro' => $editing ? '' : __( 'A preset saves tags you use a lot, so every link for a campaign or channel is spelled the same way. Pick it in the Link Builder or Bulk Builder to fill in the tags.', 'sunshine-utm-builder' ) . ' ' . Sunshine_UTM_Admin::doc_link( 'utm-presets-and-tokens' ) )
 		);
 		Sunshine_UTM_Admin::form_open( 'save_preset' );
 		?>

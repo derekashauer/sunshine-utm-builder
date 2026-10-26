@@ -61,6 +61,7 @@ $methods       = array(
 					esc_html_e( 'No batches match your search.', 'sunshine-utm-builder' );
 				} else {
 					esc_html_e( 'No batches yet. Links you make in the Bulk Builder are saved here.', 'sunshine-utm-builder' );
+					echo ' ' . Sunshine_UTM_Admin::doc_link( 'utm-builder-saved-batches' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in doc_link().
 				}
 				?>
 			</p>

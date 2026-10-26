@@ -274,6 +274,20 @@ class Sunshine_UTM_Admin {
 		echo '<span class="screen-reader-text"> ' . esc_html__( '(opens in a new tab)', 'sunshine-utm-builder' ) . '</span><span aria-hidden="true" class="dashicons dashicons-external wps-new-tab"></span>';
 	}
 
+	/**
+	 * A "Learn more" style link to a doc on wpsunshine.com, same as Address Autocomplete's.
+	 *
+	 * @param string $slug  Doc slug.
+	 * @param string $label Link text.
+	 * @return string HTML.
+	 */
+	public static function doc_link( $slug, $label = '' ) {
+		if ( '' === $label ) {
+			$label = __( 'Learn more', 'sunshine-utm-builder' );
+		}
+		return '<a href="' . esc_url( 'https://wpsunshine.com/documentation/' . $slug . '/?utm_source=plugin&utm_medium=link&utm_campaign=doc' ) . '" target="_blank" rel="noopener">' . esc_html( $label ) . '<span class="screen-reader-text"> ' . esc_html__( '(opens in a new tab)', 'sunshine-utm-builder' ) . '</span></a>';
+	}
+
 	public function handle_post() {
 		if ( empty( $_POST['sunshine_utm_action'] ) ) {
 			return;

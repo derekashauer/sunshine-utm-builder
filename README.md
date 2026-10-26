@@ -40,6 +40,10 @@ It needs WordPress 6.0 or newer and PHP 7.4 or newer. Short links on your own do
 
 Everything is stored in your own WordPress database, including presets, batches, short links and their click counts. QR codes and the GA4 channel check run in your browser. Links only leave your site when you shorten them with Bitly or Rebrandly, or when the optional link checks load your pages to make sure they work. The plugin doesn't track your visitors and doesn't phone home.
 
+## Documentation
+
+Every feature has a step-by-step guide in the [UTM Builder documentation](https://wpsunshine.com/doccat/utm-builder/), and each screen in the plugin links to the guide for it.
+
 ## Questions and bugs
 
 If something isn't working or you have an idea for the plugin, please [open an issue](https://github.com/derekashauer/sunshine-utm-builder/issues) and I'll take a look.

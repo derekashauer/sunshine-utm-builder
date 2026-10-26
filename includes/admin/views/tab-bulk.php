@@ -61,7 +61,7 @@ foreach ( $presets as $preset ) {
 		<div data-sunshine-utm-for="urls social variations">
 			<?php Sunshine_UTM_Admin::option_row_open( __( 'Links', 'sunshine-utm-builder' ), 'sunshine-utm-urls' ); ?>
 				<textarea id="sunshine-utm-urls" name="urls" rows="6" class="large-text code" spellcheck="false" placeholder="https://example.com/sale/&#10;https://example.com/blog/new-post/"></textarea>
-			<?php Sunshine_UTM_Admin::option_row_close( __( 'One per line. Any UTM tags already on a link are replaced. Its other parameters are kept.', 'sunshine-utm-builder' ) ); ?>
+			<?php Sunshine_UTM_Admin::option_row_close( __( 'One per line. Any UTM tags already on a link are replaced. Its other parameters are kept.', 'sunshine-utm-builder' ) . ' ' . Sunshine_UTM_Admin::doc_link( 'bulk-utm-builder' ) ); ?>
 		</div>
 
 		<div data-sunshine-utm-for="csv" hidden>
@@ -73,7 +73,7 @@ foreach ( $presets as $preset ) {
 				<textarea id="sunshine-utm-csv" name="csv" rows="8" class="large-text code" spellcheck="false" placeholder="url,source,medium,campaign&#10;https://example.com/sale/,newsletter,email,spring_sale"></textarea>
 			<?php
 			Sunshine_UTM_Admin::option_row_close(
-				__( 'The first row names the columns. You need a url column. Add any of source, medium, campaign, term and content (or utm_source and so on). Any other column, like ref, is added to that row\'s link as its own parameter.', 'sunshine-utm-builder' )
+				__( 'The first row names the columns. You need a url column. Add any of source, medium, campaign, term and content (or utm_source and so on). Any other column, like ref, is added to that row\'s link as its own parameter.', 'sunshine-utm-builder' ) . ' ' . Sunshine_UTM_Admin::doc_link( 'bulk-utm-builder', __( 'More on the CSV format', 'sunshine-utm-builder' ) )
 			);
 			?>
 		</div>
@@ -142,6 +142,7 @@ foreach ( $presets as $preset ) {
 					<li><code><?php echo esc_html( $token ); ?></code> <?php echo esc_html( $what ); ?></li>
 				<?php endforeach; ?>
 			</ul>
+			<p><?php echo Sunshine_UTM_Admin::doc_link( 'utm-presets-and-tokens', __( 'More on tokens', 'sunshine-utm-builder' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in doc_link(). ?></p>
 		</details>
 
 	<?php Sunshine_UTM_Admin::panel_close(); ?>

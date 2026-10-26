@@ -16,6 +16,8 @@ Sunshine UTM Builder makes the UTM-tagged links you put in emails, ads and socia
 
 It lives under Tools → UTM Builder. Paste a page, fill in the tags, and your link updates as you type. Everything is free, with no paid version and no account to sign up for.
 
+Every feature has a step-by-step guide in the [UTM Builder documentation](https://wpsunshine.com/doccat/utm-builder/?utm_source=wordpress.org&utm_medium=link&utm_campaign=utm-builder-readme), and each screen in the plugin links to the guide for it.
+
 = Build a link as you type =
 
 * All five tags: source, medium, campaign, term and content

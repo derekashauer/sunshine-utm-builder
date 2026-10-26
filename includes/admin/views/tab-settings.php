@@ -41,7 +41,7 @@ unset( $post_types['attachment'] );
 							</label>
 						<?php endforeach; ?>
 					</fieldset>
-				<?php Sunshine_UTM_Admin::option_row_close( __( 'Where the shortcuts show. With none chosen, the admin bar link shows on every page of your site, and the post list link and editor panel are hidden.', 'sunshine-utm-builder' ) ); ?>
+				<?php Sunshine_UTM_Admin::option_row_close( __( 'Where the shortcuts show. With none chosen, the admin bar link shows on every page of your site, and the post list link and editor panel are hidden.', 'sunshine-utm-builder' ) . ' ' . Sunshine_UTM_Admin::doc_link( 'utm-builder-shortcuts' ) ); ?>
 
 			<?php Sunshine_UTM_Admin::panel_close(); ?>
 
@@ -49,7 +49,7 @@ unset( $post_types['attachment'] );
 			Sunshine_UTM_Admin::panel_open(
 				'formatting',
 				__( 'Tag formatting', 'sunshine-utm-builder' ),
-				array( 'intro' => __( 'Google Analytics treats Email, email and e-mail as three different mediums. These rules clean up tags as you type them so the same thing is always spelled the same way. They apply to the five main tags, not to other parameters.', 'sunshine-utm-builder' ) )
+				array( 'intro' => __( 'Google Analytics treats Email, email and e-mail as three different mediums. These rules clean up tags as you type them so the same thing is always spelled the same way. They apply to the five main tags, not to other parameters.', 'sunshine-utm-builder' ) . ' ' . Sunshine_UTM_Admin::doc_link( 'utm-tag-formatting-rules' ) )
 			);
 			?>
 
@@ -81,7 +81,7 @@ unset( $post_types['attachment'] );
 			Sunshine_UTM_Admin::panel_open(
 				'lists',
 				__( 'Team lists', 'sunshine-utm-builder' ),
-				array( 'intro' => __( 'When one person types facebook, another fb and another Facebook, Google Analytics splits the visits three ways. List the sources and mediums your team uses and the builder offers only those.', 'sunshine-utm-builder' ) )
+				array( 'intro' => __( 'When one person types facebook, another fb and another Facebook, Google Analytics splits the visits three ways. List the sources and mediums your team uses and the builder offers only those.', 'sunshine-utm-builder' ) . ' ' . Sunshine_UTM_Admin::doc_link( 'utm-builder-team-lists' ) )
 			);
 			?>
 
@@ -109,7 +109,7 @@ unset( $post_types['attachment'] );
 						/* translators: %s: the most pages that can be checked at once. */
 						__( 'Catches typos and deleted pages before the links go out. Links to pages that don\'t load are marked in the batch. Creating a batch takes a little longer, and checks run on batches going to up to %s different pages.', 'sunshine-utm-builder' ),
 						number_format_i18n( Sunshine_UTM_Bulk::CHECK_MAX )
-					)
+					) . ' ' . Sunshine_UTM_Admin::doc_link( 'utm-builder-link-checks' )
 				);
 				?>
 
@@ -119,7 +119,7 @@ unset( $post_types['attachment'] );
 			Sunshine_UTM_Admin::panel_open(
 				'shortening',
 				__( 'Link shortening', 'sunshine-utm-builder' ),
-				array( 'intro' => __( 'Short links are easier to share where long ones look messy, like social posts and text messages. Set up as many of these as you like, and choose one each time you shorten a link.', 'sunshine-utm-builder' ) )
+				array( 'intro' => __( 'Short links are easier to share where long ones look messy, like social posts and text messages. Set up as many of these as you like, and choose one each time you shorten a link.', 'sunshine-utm-builder' ) . ' ' . Sunshine_UTM_Admin::doc_link( 'short-links-on-your-own-domain' ) )
 			);
 			?>
 
@@ -137,6 +137,7 @@ unset( $post_types['attachment'] );
 									esc_html__( 'Short links on your site need pretty permalinks. Choose any setting other than Plain, without index.php, under %s.', 'sunshine-utm-builder' ),
 									'<a href="' . esc_url( admin_url( 'options-permalink.php' ) ) . '">' . esc_html__( 'Settings → Permalinks', 'sunshine-utm-builder' ) . '</a>'
 								);
+								echo ' ' . Sunshine_UTM_Admin::doc_link( 'short-link-page-not-found' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in doc_link().
 								?>
 							</p>
 						</div>
@@ -157,7 +158,7 @@ unset( $post_types['attachment'] );
 
 				<?php Sunshine_UTM_Admin::option_row_open( __( 'Bitly access token', 'sunshine-utm-builder' ), 'sunshine-utm-bitly-token' ); ?>
 					<input type="password" id="sunshine-utm-bitly-token" name="bitly_token" class="regular-text code" autocomplete="new-password" spellcheck="false" value="<?php echo esc_attr( $settings['bitly_token'] ); ?>">
-				<?php Sunshine_UTM_Admin::option_row_close( __( 'To shorten with Bitly. In Bitly, open Settings, then Developer settings, then API, and generate a token. Leave empty if you don\'t use Bitly.', 'sunshine-utm-builder' ) ); ?>
+				<?php Sunshine_UTM_Admin::option_row_close( __( 'To shorten with Bitly. In Bitly, open Settings, then Developer settings, then API, and generate a token. Leave empty if you don\'t use Bitly.', 'sunshine-utm-builder' ) . ' ' . Sunshine_UTM_Admin::doc_link( 'shorten-utm-links-bitly-rebrandly' ) ); ?>
 
 				<?php Sunshine_UTM_Admin::option_row_open( __( 'Rebrandly API key', 'sunshine-utm-builder' ), 'sunshine-utm-rebrandly-key' ); ?>
 					<input type="password" id="sunshine-utm-rebrandly-key" name="rebrandly_key" class="regular-text code" autocomplete="new-password" spellcheck="false" value="<?php echo esc_attr( $settings['rebrandly_key'] ); ?>">
@@ -177,7 +178,7 @@ unset( $post_types['attachment'] );
 
 				<?php Sunshine_UTM_Admin::option_row_open( __( 'Uninstall', 'sunshine-utm-builder' ) ); ?>
 					<?php Sunshine_UTM_Admin::checkbox_field( 'delete_data', (bool) $settings['delete_data'], __( 'Delete presets, batches, short links and settings when the plugin is deleted', 'sunshine-utm-builder' ) ); ?>
-				<?php Sunshine_UTM_Admin::option_row_close( __( 'Leave this off if you might reinstall later. Short links on your own domain stop working once they\'re deleted, and deleted data can\'t be brought back.', 'sunshine-utm-builder' ) ); ?>
+				<?php Sunshine_UTM_Admin::option_row_close( __( 'Leave this off if you might reinstall later. Short links on your own domain stop working once they\'re deleted, and deleted data can\'t be brought back.', 'sunshine-utm-builder' ) . ' ' . Sunshine_UTM_Admin::doc_link( 'utm-builder-data-and-uninstall' ) ); ?>
 
 			<?php Sunshine_UTM_Admin::panel_close(); ?>
 
