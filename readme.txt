@@ -4,7 +4,7 @@ Tags: utm, utm builder, utm generator, campaign url builder, google analytics
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -221,6 +221,10 @@ If you turn on link checks in Settings, each page a batch links to is requested 
 7. Settings for formatting, team lists, link checks and short links
 
 == Changelog ==
+
+= 1.0.1 =
+* Each screen links to its step-by-step guide on wpsunshine.com, and the Documentation link opens the UTM Builder docs
+* The empty Short Links tab now names your site's domain, which is how the builder lists it under "Shorten with"
 
 = 1.0.0 =
 * First release
