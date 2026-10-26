@@ -28,11 +28,11 @@ It's completely free, with no paid version and no account to sign up for. I buil
 
 ## Installing
 
-Sunshine UTM Builder is on its way to the WordPress.org plugin directory. Until it's listed there, you can install it from this repository:
+Sunshine UTM Builder is in the [WordPress.org plugin directory](https://wordpress.org/plugins/sunshine-utm-builder/):
 
-1. Download the latest code as a zip (the green **Code** button, then **Download ZIP**).
-2. In WordPress, go to Plugins → Add New → Upload Plugin and upload the zip.
-3. Activate it, then go to Tools → UTM Builder and build your first link.
+1. In WordPress, go to Plugins → Add New Plugin and search for "Sunshine UTM Builder".
+2. Click **Install Now**, then **Activate**.
+3. Go to Tools → UTM Builder and build your first link.
 
 It needs WordPress 6.0 or newer and PHP 7.4 or newer. Short links on your own domain need pretty permalinks, which almost every site already has (any setting other than Plain under Settings → Permalinks).
 
