@@ -14,6 +14,8 @@ Build UTM links one at a time or hundreds at once, with GA4 channel checks, QR c
 
 Sunshine UTM Builder makes the UTM-tagged links you put in emails, ads and social posts, so Google Analytics can tell you where your visitors came from. It also keeps your tags spelled the same way every time, since one stray capital letter or space is enough to split a campaign into two rows in your reports.
 
+https://www.youtube.com/watch?v=83fJ5ydLP94
+
 It lives under Tools → UTM Builder. Paste a page, fill in the tags, and your link updates as you type. Everything is free, with no paid version and no account to sign up for.
 
 Every feature has a step-by-step guide in the [UTM Builder documentation](https://wpsunshine.com/doccat/utm-builder/?utm_source=wordpress.org&utm_medium=link&utm_campaign=utm-builder-readme), and each screen in the plugin links to the guide for it.
