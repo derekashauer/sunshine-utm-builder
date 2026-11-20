@@ -224,6 +224,9 @@ If you turn on link checks in Settings, each page a batch links to is requested 
 
 == Changelog ==
 
+= 1.0.2 =
+* The REST API can give a short link a custom ending with `code`
+
 = 1.0.1 =
 * Each screen links to its step-by-step guide on wpsunshine.com, and the Documentation link opens the UTM Builder docs
 * The empty Short Links tab now names your site's domain, which is how the builder lists it under "Shorten with"

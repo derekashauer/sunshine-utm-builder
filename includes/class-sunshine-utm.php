@@ -404,7 +404,12 @@ class Sunshine_UTM {
 	 *
 	 * Body: urls (array), source, medium, campaign, term, content, preset (ID), params (object of
 	 * extra parameters), shorten (bool), shortener (site, bitly or rebrandly; defaults to the default
-	 * from Settings), save (bool), name (batch name).
+	 * from Settings), code (a custom ending for the short link, like spring-sale: one link, this
+	 * site's shortener only), save (bool), name (batch name).
+	 *
+	 * A custom ending goes through Sunshine_UTM_Short_Links::update(), the same checks as renaming
+	 * a short link in wp-admin. The same long link always has one short link, so asking again with
+	 * a new ending renames it and the old ending stops working.
 	 */
 	public function rest_routes() {
 		register_rest_route(
@@ -458,6 +463,10 @@ class Sunshine_UTM {
 				return new WP_Error( 'not_ready', sprintf( __( 'That shortener isn\'t set up. These are: %s.', 'sunshine-utm-builder' ), implode( ', ', array_keys( Sunshine_UTM_Shortener::ready() ) ) ), array( 'status' => 400 ) );
 			}
 		}
+		$code = (string) $request->get_param( 'code' );
+		if ( '' !== $code && ( ! $shorten || 'site' !== $service || 1 !== count( $result['rows'] ) ) ) {
+			return new WP_Error( 'code_needs_site', __( 'A custom ending works on one link at a time, shortened by this site.', 'sunshine-utm-builder' ), array( 'status' => 400 ) );
+		}
 		if ( $shorten && Sunshine_UTM_Shortener::is_outside( $service ) && count( $result['rows'] ) > Sunshine_UTM_Bulk::SHORTEN_MAX ) {
 			/* translators: %s: the most links that can be shortened at once. */
 			return new WP_Error( 'too_many_to_shorten', sprintf( __( 'Shortening works on up to %s links at a time.', 'sunshine-utm-builder' ), Sunshine_UTM_Bulk::SHORTEN_MAX ), array( 'status' => 400 ) );
@@ -469,6 +478,16 @@ class Sunshine_UTM {
 				'check'   => false,
 			)
 		);
+
+		if ( '' !== $code && '' !== $links[0]['short_url'] ) {
+			$path    = (string) wp_parse_url( $links[0]['short_url'], PHP_URL_PATH );
+			$renamed = Sunshine_UTM_Short_Links::update( basename( $path ), $code, '' );
+			if ( is_wp_error( $renamed ) ) {
+				$renamed->add_data( array( 'status' => 400 ) );
+				return $renamed;
+			}
+			$links[0]['short_url'] = Sunshine_UTM_Short_Links::url( $renamed );
+		}
 
 		$batch_id = 0;
 		if ( $request->get_param( 'save' ) ) {
