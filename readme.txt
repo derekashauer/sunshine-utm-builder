@@ -118,7 +118,7 @@ AI tools like Claude connect to them through the [MCP Adapter](https://github.co
 
 = REST API =
 
-Send a POST to `/wp-json/sunshine-utm/v1/links` with a list of `urls` and the tags (`source`, `medium`, `campaign`, `term`, `content`) to get tagged links back. Add `"save": true` to keep them as a batch.
+Send a POST to `/wp-json/sunshine-utm/v1/links` with a list of `urls` and the tags (`source`, `medium`, `campaign`, `term`, `content`) to get tagged links back. Add `"save": true` to keep them as a batch, or `"shorten": true` for short links. For one link shortened by your own site, `"code": "spring-sale"` gives it a readable ending (yoursite.com/spring-sale) instead of a made-up code. A link only ever has one short link, so a new `code` renames it and the old ending stops working.
 
 To change one of your short links, send a POST to `/wp-json/sunshine-utm/v1/short-links/<ending>` with a new `url`, a new `ending`, or both. Its clicks are kept, and a new ending means the old short link stops working.
 
