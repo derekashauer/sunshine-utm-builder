@@ -205,26 +205,39 @@ class Sunshine_UTM_Short_Links {
 
 	/**
 	 * The code in a short link on this site, like https://example.com/g/x8d89c, example.com/x8d89c
-	 * or just x8d89c. '' when the link is on another domain (a Bitly or Rebrandly link).
+	 * or just x8d89c. '' when it can't be one: another domain (a Bitly or Rebrandly link), or more
+	 * than one folder deep, since a short link is at most prefix/code.
 	 *
 	 * @param string $link Short link or its ending.
 	 * @return string Code, lowercase. It may not exist.
 	 */
 	public static function code_from_link( $link ) {
-		$link = trim( (string) $link );
-		if ( false === strpos( $link, '/' ) ) {
-			return strtolower( $link );
+		$link = rtrim( trim( (string) $link ), '/' );
+		$code = strtolower( $link );
+		if ( false !== strpos( $link, '/' ) ) {
+			if ( ! preg_match( '#^https?://#i', $link ) ) {
+				$link = 'https://' . ltrim( $link, '/' );
+			}
+			$home = wp_parse_url( home_url() );
+			$host = preg_replace( '/^www\./', '', strtolower( (string) wp_parse_url( $link, PHP_URL_HOST ) ) );
+			if ( preg_replace( '/^www\./', '', strtolower( isset( $home['host'] ) ? $home['host'] : '' ) ) !== $host ) {
+				return '';
+			}
+			$path = trim( rawurldecode( (string) wp_parse_url( $link, PHP_URL_PATH ) ), '/' );
+			$base = trim( isset( $home['path'] ) ? $home['path'] : '', '/' );
+			if ( '' !== $base ) {
+				if ( 0 !== strpos( $path . '/', $base . '/' ) ) {
+					return '';
+				}
+				$path = (string) substr( $path, strlen( $base ) + 1 );
+			}
+			$parts = explode( '/', $path );
+			if ( count( $parts ) > 2 ) {
+				return '';
+			}
+			$code = strtolower( (string) end( $parts ) );
 		}
-		if ( ! preg_match( '#^https?://#i', $link ) ) {
-			$link = 'https://' . ltrim( $link, '/' );
-		}
-		$host = preg_replace( '/^www\./', '', strtolower( (string) wp_parse_url( $link, PHP_URL_HOST ) ) );
-		if ( preg_replace( '/^www\./', '', strtolower( (string) wp_parse_url( home_url(), PHP_URL_HOST ) ) ) !== $host ) {
-			return '';
-		}
-		$path  = trim( (string) wp_parse_url( $link, PHP_URL_PATH ), '/' );
-		$parts = explode( '/', $path );
-		return strtolower( rawurldecode( (string) end( $parts ) ) );
+		return preg_match( '/^[a-z0-9-]{3,50}$/', $code ) ? $code : '';
 	}
 
 	public function prefixed_route() {
@@ -678,11 +691,9 @@ class Sunshine_UTM_Short_Links {
 	public static function clicks_for( $short_urls ) {
 		global $wpdb;
 		$codes = array();
-		$home  = untrailingslashit( home_url() ) . '/';
 		foreach ( array_filter( (array) $short_urls ) as $short_url ) {
-			$parts = explode( '/', untrailingslashit( (string) $short_url ) );
-			$code  = strtolower( (string) end( $parts ) );
-			if ( 0 === strpos( (string) $short_url, $home ) && preg_match( '/^[a-z0-9-]{3,50}$/', $code ) ) {
+			$code = false === strpos( (string) $short_url, '/' ) ? '' : self::code_from_link( $short_url );
+			if ( '' !== $code ) {
 				$codes[ $short_url ] = $code;
 			}
 		}

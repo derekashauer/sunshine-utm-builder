@@ -4,7 +4,7 @@ Tags: utm, utm builder, utm generator, campaign url builder, google analytics
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -107,17 +107,22 @@ You can also connect your own Bitly or Rebrandly account. Set up as many as you 
 
 = Let AI build your links =
 
-Ask an AI assistant for "a tagged link to the spring sale page for our Facebook post" and it can make the link on your site, with your presets, your formatting rules and your short links, so its links match yours. The plugin adds three abilities through the WordPress Abilities API (WordPress 6.9 and later):
+Ask an AI assistant for "a tagged link to the spring sale page for our Facebook post" and it can make the link on your site, with your presets, your formatting rules and your short links, so its links match yours. The plugin adds four abilities through the WordPress Abilities API (WordPress 6.9 and later):
 
 * **Build a UTM link** for one page, with an optional short link from any shortener you've set up
 * **Build many UTM links** with any of the Bulk Builder's four ways, and save them as a batch
 * **List UTM presets**, so the AI uses the tag spellings you already use
+* **Update a short link** on your own domain, to change where it goes or give it a new ending, with its clicks kept
 
 AI tools like Claude connect to them through the [MCP Adapter](https://github.com/WordPress/mcp-adapter) plugin. Scripts and other tools can run them at `/wp-json/wp-abilities/v1/abilities/sunshine-utm/build-link/run`. Both need an administrator login, and an [Application Password](https://make.wordpress.org/core/2020/11/05/application-passwords-integration-guide/) works well for that.
 
 = REST API =
 
-Send a POST to `/wp-json/sunshine-utm/v1/links` with a list of `urls` and the tags (`source`, `medium`, `campaign`, `term`, `content`) to get tagged links back. Add `"save": true` to keep them as a batch. The endpoint only answers requests from administrators.
+Send a POST to `/wp-json/sunshine-utm/v1/links` with a list of `urls` and the tags (`source`, `medium`, `campaign`, `term`, `content`) to get tagged links back. Add `"save": true` to keep them as a batch.
+
+To change one of your short links, send a POST to `/wp-json/sunshine-utm/v1/short-links/<ending>` with a new `url`, a new `ending`, or both. Its clicks are kept, and a new ending means the old short link stops working.
+
+Both endpoints only answer requests from administrators.
 
 = See which links lead to sales =
 
@@ -223,6 +228,9 @@ If you turn on link checks in Settings, each page a batch links to is requested 
 7. Settings for formatting, team lists, link checks and short links
 
 == Changelog ==
+
+= 1.1.0 =
+* AI assistants and scripts can now change your short links: where one goes, its ending, or both, with its clicks kept. There's a new "Update a short link" ability and a REST API endpoint at `/wp-json/sunshine-utm/v1/short-links/<ending>`
 
 = 1.0.1 =
 * Each screen links to its step-by-step guide on wpsunshine.com, and the Documentation link opens the UTM Builder docs

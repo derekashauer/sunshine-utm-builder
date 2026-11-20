@@ -22,7 +22,7 @@ It's completely free, with no paid version and no account to sign up for. I buil
 
 **Right where you work.** A "UTM link" button in the admin bar, under each post in your post lists, and in a panel in the block editor sidebar opens the builder with that page already filled in.
 
-**For AI assistants and scripts.** The plugin adds abilities through the WordPress Abilities API (WordPress 6.9 and later), so AI assistants like Claude can build links on your site through the [MCP Adapter](https://github.com/WordPress/mcp-adapter) plugin, using your presets and formatting rules. There's also a REST API endpoint at `/wp-json/sunshine-utm/v1/links`, and both need an administrator login.
+**For AI assistants and scripts.** The plugin adds abilities through the WordPress Abilities API (WordPress 6.9 and later), so AI assistants like Claude can build links on your site through the [MCP Adapter](https://github.com/WordPress/mcp-adapter) plugin, using your presets and formatting rules, and change where your short links go. There are also REST API endpoints at `/wp-json/sunshine-utm/v1/links` and `/wp-json/sunshine-utm/v1/short-links/<ending>`, and both need an administrator login.
 
 **Works with Conversion Bridge.** This plugin builds the links and counts clicks on your short links. If you'd like to see which campaigns turn into sales and form entries, [Conversion Bridge](https://conversionbridgewp.com/) records the UTM tags behind each conversion, and with both plugins active the Short Links tab shows conversions next to clicks.
 

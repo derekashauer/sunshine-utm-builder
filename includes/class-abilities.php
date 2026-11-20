@@ -264,10 +264,11 @@ class Sunshine_UTM_Abilities {
 				'permission_callback' => $permission,
 				'meta'                => array(
 					// Not destructive: nothing is deleted, and WordPress only runs destructive abilities with DELETE.
+					// Not idempotent: after a new ending, the same call can't find the old one.
 					'annotations'  => array(
 						'readonly'    => false,
 						'destructive' => false,
-						'idempotent'  => true,
+						'idempotent'  => false,
 					),
 					'show_in_rest' => true,
 					'mcp'          => array( 'public' => true ),
@@ -285,17 +286,18 @@ class Sunshine_UTM_Abilities {
 	public static function update_short_link( $input ) {
 		$input  = (array) $input;
 		$url    = isset( $input['url'] ) ? trim( (string) $input['url'] ) : '';
-		$ending = isset( $input['ending'] ) ? trim( (string) $input['ending'] ) : '';
+		$ending = Sunshine_UTM_Short_Links::clean_code( isset( $input['ending'] ) ? $input['ending'] : '' );
 		if ( '' === $url && '' === $ending ) {
-			return new WP_Error( 'nothing_to_change', __( 'Send url (where the short link should go), ending (its new ending), or both.', 'sunshine-utm-builder' ), array( 'status' => 400 ) );
+			return new WP_Error( 'nothing_to_change', __( 'Send url (where the short link should go), ending (a new ending with letters or numbers), or both.', 'sunshine-utm-builder' ), array( 'status' => 400 ) );
 		}
-		$code = Sunshine_UTM_Short_Links::code_from_link( isset( $input['short_link'] ) ? $input['short_link'] : '' );
-		if ( '' === $code || ! Sunshine_UTM_Short_Links::get( $code ) ) {
-			return new WP_Error( 'no_short_link', __( 'There\'s no short link like that on this site. Only short links on this site\'s own domain can be changed.', 'sunshine-utm-builder' ), array( 'status' => 404 ) );
+		$missing = new WP_Error( 'no_short_link', __( 'There\'s no short link like that on this site. Only short links on this site\'s own domain can be changed.', 'sunshine-utm-builder' ), array( 'status' => 404 ) );
+		$code    = Sunshine_UTM_Short_Links::code_from_link( isset( $input['short_link'] ) ? $input['short_link'] : '' );
+		if ( '' === $code ) {
+			return $missing;
 		}
 		$code = Sunshine_UTM_Short_Links::update( $code, $ending, $url );
 		if ( is_wp_error( $code ) ) {
-			return self::for_ai( $code );
+			return 'missing' === $code->get_error_code() ? $missing : self::for_ai( $code );
 		}
 		$row    = Sunshine_UTM_Short_Links::get( $code );
 		$output = array(
