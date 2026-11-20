@@ -229,6 +229,9 @@ If you turn on link checks in Settings, each page a batch links to is requested 
 
 == Changelog ==
 
+= 1.1.1 =
+* The REST API can give a short link a custom ending with `code`
+
 = 1.1.0 =
 * AI assistants and scripts can now change your short links: where one goes, its ending, or both, with its clicks kept. There's a new "Update a short link" ability and a REST API endpoint at `/wp-json/sunshine-utm/v1/short-links/<ending>`
 
