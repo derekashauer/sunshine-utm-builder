@@ -117,7 +117,7 @@ AI tools like Claude connect to them through the [MCP Adapter](https://github.co
 
 = REST API =
 
-Send a POST to `/wp-json/sunshine-utm/v1/links` with a list of `urls` and the tags (`source`, `medium`, `campaign`, `term`, `content`) to get tagged links back. Add `"save": true` to keep them as a batch. The endpoint only answers requests from administrators.
+Send a POST to `/wp-json/sunshine-utm/v1/links` with a list of `urls` and the tags (`source`, `medium`, `campaign`, `term`, `content`) to get tagged links back. Add `"save": true` to keep them as a batch, or `"shorten": true` for short links. For one link shortened by your own site, `"code": "spring-sale"` gives it a readable ending (yoursite.com/spring-sale) instead of a made-up code. A link only ever has one short link, so a new `code` renames it and the old ending stops working. The endpoint only answers requests from administrators.
 
 = See which links lead to sales =
 
@@ -223,6 +223,9 @@ If you turn on link checks in Settings, each page a batch links to is requested 
 7. Settings for formatting, team lists, link checks and short links
 
 == Changelog ==
+
+= 1.0.2 =
+* The REST API can give a short link a custom ending with `code`
 
 = 1.0.1 =
 * Each screen links to its step-by-step guide on wpsunshine.com, and the Documentation link opens the UTM Builder docs
