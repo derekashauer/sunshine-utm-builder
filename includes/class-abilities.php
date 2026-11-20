@@ -1,6 +1,7 @@
 <?php
 /**
- * Abilities for AI assistants: build one tagged link, build many, and list presets. Registered
+ * Abilities for AI assistants: build one tagged link, build many, list presets, and change a short
+ * link on this site. Registered
  * with the WordPress Abilities API (WordPress 6.9 and later; skipped quietly on older versions).
  *
  * Each ability is marked mcp.public, so the MCP Adapter plugin lets AI tools like Claude find and
@@ -244,6 +245,130 @@ class Sunshine_UTM_Abilities {
 					'mcp'          => array( 'public' => true ),
 				),
 			)
+		);
+
+		wp_register_ability(
+			'sunshine-utm/update-short-link',
+			array(
+				'label'               => __( 'Update a short link', 'sunshine-utm-builder' ),
+				'description'         => __( 'Changes where one of this site\'s own short links goes, its ending, or both. Its clicks so far are kept. Only short links on this site\'s domain can be changed; Bitly and Rebrandly links are changed in those services. The new url is used exactly as given, so to send people to a tagged link, build it first with sunshine-utm/build-link and send its link. A new ending means the old short link stops working, so only change the ending when asked to.', 'sunshine-utm-builder' ),
+				'category'            => self::CATEGORY,
+				'input_schema'        => array(
+					'type'                 => 'object',
+					'additionalProperties' => false,
+					'required'             => array( 'short_link' ),
+					'properties'           => self::short_link_properties(),
+				),
+				'output_schema'       => self::short_link_schema(),
+				'execute_callback'    => array( __CLASS__, 'update_short_link' ),
+				'permission_callback' => $permission,
+				'meta'                => array(
+					// Not destructive: nothing is deleted, and WordPress only runs destructive abilities with DELETE.
+					// Not idempotent: after a new ending, the same call can't find the old one.
+					'annotations'  => array(
+						'readonly'    => false,
+						'destructive' => false,
+						'idempotent'  => false,
+					),
+					'show_in_rest' => true,
+					'mcp'          => array( 'public' => true ),
+				),
+			)
+		);
+	}
+
+	/**
+	 * Change a short link's destination, ending or both. Used by the ability and the REST API.
+	 *
+	 * @param array $input short_link (the link or its ending), url, ending.
+	 * @return array|WP_Error The short link as it is now.
+	 */
+	public static function update_short_link( $input ) {
+		$input  = (array) $input;
+		$url    = isset( $input['url'] ) ? trim( (string) $input['url'] ) : '';
+		$sent   = isset( $input['ending'] ) ? trim( (string) $input['ending'] ) : '';
+		$ending = Sunshine_UTM_Short_Links::clean_code( $sent );
+		if ( '' !== $sent && '' === $ending ) {
+			return new WP_Error( 'bad_ending', __( 'Use letters, numbers and dashes for the ending, like spring-sale.', 'sunshine-utm-builder' ), array( 'status' => 400 ) );
+		}
+		if ( '' === $url && '' === $ending ) {
+			return new WP_Error( 'nothing_to_change', __( 'Send url (where the short link should go), ending (a new ending with letters or numbers), or both.', 'sunshine-utm-builder' ), array( 'status' => 400 ) );
+		}
+		$missing = new WP_Error( 'no_short_link', __( 'There\'s no short link like that on this site. Only short links on this site\'s own domain can be changed.', 'sunshine-utm-builder' ), array( 'status' => 404 ) );
+		$code    = Sunshine_UTM_Short_Links::code_from_link( isset( $input['short_link'] ) ? $input['short_link'] : '' );
+		if ( '' === $code ) {
+			return $missing;
+		}
+		$code = Sunshine_UTM_Short_Links::update( $code, $ending, $url );
+		if ( is_wp_error( $code ) ) {
+			return 'missing' === $code->get_error_code() ? $missing : self::for_ai( $code );
+		}
+		$row    = Sunshine_UTM_Short_Links::get( $code );
+		$output = array(
+			'short_link' => Sunshine_UTM_Short_Links::url( $row['code'] ),
+			'ending'     => $row['code'],
+			'url'        => $row['url'],
+			'clicks'     => (int) $row['clicks'],
+		);
+		foreach ( Sunshine_UTM_URL_Builder::KEYS as $key ) {
+			$output[ substr( $key, 4 ) ] = (string) $row[ $key ];
+		}
+		return $output;
+	}
+
+	/**
+	 * The fields for changing a short link, as schema properties. Shared with the REST route.
+	 *
+	 * @return array
+	 */
+	public static function short_link_properties() {
+		return array(
+			'short_link' => array(
+				'type'        => 'string',
+				'description' => __( 'The short link to change, like https://example.com/x8d89c, or just its ending.', 'sunshine-utm-builder' ),
+			),
+			'url'        => array(
+				'type'        => 'string',
+				'description' => __( 'Where it should go now: a full web address, used exactly as given. Leave out to keep it.', 'sunshine-utm-builder' ),
+			),
+			'ending'     => array(
+				'type'        => 'string',
+				'description' => __( 'A new ending, like spring-sale: letters, numbers and dashes, at least 3. The old short link stops working. Leave out to keep it.', 'sunshine-utm-builder' ),
+			),
+		);
+	}
+
+	/**
+	 * What update-short-link returns.
+	 *
+	 * @return array
+	 */
+	protected static function short_link_schema() {
+		$properties = array(
+			'short_link' => array(
+				'type'        => 'string',
+				'description' => __( 'The short link as it is now.', 'sunshine-utm-builder' ),
+			),
+			'ending'     => array( 'type' => 'string' ),
+			'url'        => array(
+				'type'        => 'string',
+				'description' => __( 'Where it goes.', 'sunshine-utm-builder' ),
+			),
+			'clicks'     => array(
+				'type'        => 'integer',
+				'description' => __( 'Clicks so far.', 'sunshine-utm-builder' ),
+			),
+		);
+		foreach ( Sunshine_UTM_URL_Builder::KEYS as $key ) {
+			$properties[ substr( $key, 4 ) ] = array(
+				'type'        => 'string',
+				/* translators: %s: utm parameter name. */
+				'description' => sprintf( __( 'The %s value in the link it goes to.', 'sunshine-utm-builder' ), $key ),
+			);
+		}
+		return array(
+			'type'       => 'object',
+			'properties' => $properties,
 		);
 	}
 
