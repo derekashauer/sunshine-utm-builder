@@ -286,7 +286,11 @@ class Sunshine_UTM_Abilities {
 	public static function update_short_link( $input ) {
 		$input  = (array) $input;
 		$url    = isset( $input['url'] ) ? trim( (string) $input['url'] ) : '';
-		$ending = Sunshine_UTM_Short_Links::clean_code( isset( $input['ending'] ) ? $input['ending'] : '' );
+		$sent   = isset( $input['ending'] ) ? trim( (string) $input['ending'] ) : '';
+		$ending = Sunshine_UTM_Short_Links::clean_code( $sent );
+		if ( '' !== $sent && '' === $ending ) {
+			return new WP_Error( 'bad_ending', __( 'Use letters, numbers and dashes for the ending, like spring-sale.', 'sunshine-utm-builder' ), array( 'status' => 400 ) );
+		}
 		if ( '' === $url && '' === $ending ) {
 			return new WP_Error( 'nothing_to_change', __( 'Send url (where the short link should go), ending (a new ending with letters or numbers), or both.', 'sunshine-utm-builder' ), array( 'status' => 400 ) );
 		}
