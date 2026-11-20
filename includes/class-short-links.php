@@ -203,6 +203,30 @@ class Sunshine_UTM_Short_Links {
 		return (string) $wpdb->get_var( $wpdb->prepare( "SELECT url FROM {$table} WHERE code = %s LIMIT 1", strtolower( (string) $code ) ) );
 	}
 
+	/**
+	 * The code in a short link on this site, like https://example.com/g/x8d89c, example.com/x8d89c
+	 * or just x8d89c. '' when the link is on another domain (a Bitly or Rebrandly link).
+	 *
+	 * @param string $link Short link or its ending.
+	 * @return string Code, lowercase. It may not exist.
+	 */
+	public static function code_from_link( $link ) {
+		$link = trim( (string) $link );
+		if ( false === strpos( $link, '/' ) ) {
+			return strtolower( $link );
+		}
+		if ( ! preg_match( '#^https?://#i', $link ) ) {
+			$link = 'https://' . ltrim( $link, '/' );
+		}
+		$host = preg_replace( '/^www\./', '', strtolower( (string) wp_parse_url( $link, PHP_URL_HOST ) ) );
+		if ( preg_replace( '/^www\./', '', strtolower( (string) wp_parse_url( home_url(), PHP_URL_HOST ) ) ) !== $host ) {
+			return '';
+		}
+		$path  = trim( (string) wp_parse_url( $link, PHP_URL_PATH ), '/' );
+		$parts = explode( '/', $path );
+		return strtolower( rawurldecode( (string) end( $parts ) ) );
+	}
+
 	public function prefixed_route() {
 		$prefix = self::prefix();
 		if ( '' === $prefix || is_admin() || ! self::available() ) {

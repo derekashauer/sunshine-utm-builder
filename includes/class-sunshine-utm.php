@@ -15,7 +15,7 @@
  * - init: database upgrade check.
  * - admin_bar_menu: "UTM link" on the front end.
  * - wp_ajax_sunshine_utm_shorten: shorten one link (admins).
- * - rest_api_init: POST sunshine-utm/v1/links.
+ * - rest_api_init: POST sunshine-utm/v1/links, POST sunshine-utm/v1/short-links/<ending>.
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -405,17 +405,35 @@ class Sunshine_UTM {
 	 * Body: urls (array), source, medium, campaign, term, content, preset (ID), params (object of
 	 * extra parameters), shorten (bool), shortener (site, bitly or rebrandly; defaults to the default
 	 * from Settings), save (bool), name (batch name).
+	 *
+	 * POST (or PUT, PATCH) /wp-json/sunshine-utm/v1/short-links/<ending>
+	 *
+	 * Body: url (where it goes now), ending (a new ending), or both. Changes one of the site's own
+	 * short links, the same way the AI ability does.
 	 */
 	public function rest_routes() {
+		$permission = function () {
+			return current_user_can( 'manage_options' );
+		};
+		register_rest_route(
+			'sunshine-utm/v1',
+			'/short-links/(?P<short_link>[A-Za-z0-9-]+)',
+			array(
+				'methods'             => WP_REST_Server::EDITABLE,
+				'callback'            => function ( $request ) {
+					return rest_ensure_response( Sunshine_UTM_Abilities::update_short_link( $request->get_params() ) );
+				},
+				'permission_callback' => $permission,
+				'args'                => Sunshine_UTM_Abilities::short_link_properties(),
+			)
+		);
 		register_rest_route(
 			'sunshine-utm/v1',
 			'/links',
 			array(
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'rest_links' ),
-				'permission_callback' => function () {
-					return current_user_can( 'manage_options' );
-				},
+				'permission_callback' => $permission,
 				'args'                => array(
 					'urls' => array(
 						'type'     => 'array',
