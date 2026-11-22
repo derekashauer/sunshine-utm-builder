@@ -159,6 +159,8 @@ class Sunshine_UTM_Short_Links {
 			return new WP_Error( 'permalinks', __( 'Short links on your site need pretty permalinks. Choose any setting other than Plain, without index.php, under Settings → Permalinks.', 'sunshine-utm-builder' ) );
 		}
 
+		// Saved with its https://, as update() does, so the redirect never treats it as a path on this site.
+		$url  = Sunshine_UTM_URL_Builder::normalize_url( $url );
 		$hash = sha1( $url );
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery
 		$code = $wpdb->get_var( $wpdb->prepare( "SELECT code FROM {$table} WHERE url_hash = %s AND url = %s LIMIT 1", $hash, $url ) );
@@ -448,7 +450,7 @@ class Sunshine_UTM_Short_Links {
 		if ( '' !== $taken_by && ( '' === $own_url || $taken_by !== $own_url ) ) {
 			return new WP_Error( 'taken', __( 'Another short link already uses that ending.', 'sunshine-utm-builder' ) );
 		}
-		if ( null !== get_page_by_path( $code, OBJECT, get_post_types( array( 'public' => true ) ) ) ) {
+		if ( self::is_page( $code ) ) {
 			return new WP_Error( 'page', __( 'A page on your site already uses that address, and a page always wins over a short link. Choose another ending.', 'sunshine-utm-builder' ) );
 		}
 		return null;
@@ -532,7 +534,8 @@ class Sunshine_UTM_Short_Links {
 		if ( ! $row ) {
 			return;
 		}
-		$url = $row['url'];
+		// Links saved before shorten() added the https:// would otherwise go to a path on this site.
+		$url = Sunshine_UTM_URL_Builder::normalize_url( $row['url'] );
 		if ( self::counts() ) {
 			self::record_click( (int) $row['id'] );
 		}
@@ -800,12 +803,14 @@ class Sunshine_UTM_Short_Links {
 	}
 
 	/**
-	 * A post or page already uses this address, so a code here would never be reached.
+	 * A post or page already uses this address. Checked with a prefix too, the same as custom
+	 * endings: if the prefix is cleared later, /code would be the page's address, and a page always
+	 * wins over a code.
 	 *
 	 * @param string $code Code.
 	 * @return bool
 	 */
 	protected static function is_page( $code ) {
-		return '' === self::prefix() && null !== get_page_by_path( $code, OBJECT, get_post_types( array( 'public' => true ) ) );
+		return null !== get_page_by_path( $code, OBJECT, get_post_types( array( 'public' => true ) ) );
 	}
 }
