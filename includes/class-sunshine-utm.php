@@ -484,10 +484,9 @@ class Sunshine_UTM {
 				return new WP_Error( 'not_ready', sprintf( __( 'That shortener isn\'t set up. These are: %s.', 'sunshine-utm-builder' ), implode( ', ', array_keys( Sunshine_UTM_Shortener::ready() ) ) ), array( 'status' => 400 ) );
 			}
 		}
-		$asked = trim( (string) $request->get_param( 'code' ) );
-		$code  = Sunshine_UTM_Short_Links::clean_code( $asked );
-		if ( '' !== $asked && '' === $code ) {
-			return new WP_Error( 'short', __( 'Use at least 3 letters or numbers for the ending.', 'sunshine-utm-builder' ), array( 'status' => 400 ) );
+		$code = Sunshine_UTM_Short_Links::sent_code( $request->get_param( 'code' ) );
+		if ( is_wp_error( $code ) ) {
+			return $code;
 		}
 		if ( '' !== $code && ( ! $shorten || 'site' !== $service || 1 !== count( $result['rows'] ) ) ) {
 			return new WP_Error( 'code_needs_site', __( 'A custom ending works on one link at a time, shortened by this site.', 'sunshine-utm-builder' ), array( 'status' => 400 ) );

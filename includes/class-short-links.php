@@ -311,6 +311,23 @@ class Sunshine_UTM_Short_Links {
 	}
 
 	/**
+	 * A custom ending sent by a script or AI tool, cleaned up. Used by the REST API and the
+	 * abilities, so a junk ending is refused the same way everywhere.
+	 *
+	 * @param string $sent Ending as sent ('' when none was sent).
+	 * @return string|WP_Error The cleaned ending ('' when none was sent), or bad_ending when it
+	 *                         cleans to nothing.
+	 */
+	public static function sent_code( $sent ) {
+		$sent = trim( (string) $sent );
+		$code = self::clean_code( $sent );
+		if ( '' !== $sent && '' === $code ) {
+			return new WP_Error( 'bad_ending', __( 'Use letters, numbers and dashes for the ending, like spring-sale.', 'sunshine-utm-builder' ), array( 'status' => 400 ) );
+		}
+		return $code;
+	}
+
+	/**
 	 * The five UTM tags in a link, for the short link's own columns. Missing ones are ''.
 	 *
 	 * @param string $url Link.
