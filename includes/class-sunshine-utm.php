@@ -404,7 +404,12 @@ class Sunshine_UTM {
 	 *
 	 * Body: urls (array), source, medium, campaign, term, content, preset (ID), params (object of
 	 * extra parameters), shorten (bool), shortener (site, bitly or rebrandly; defaults to the default
-	 * from Settings), save (bool), name (batch name).
+	 * from Settings), ending (a custom ending for the short link, like spring-sale: one link, this
+	 * site's shortener only), save (bool), name (batch name).
+	 *
+	 * A custom ending goes through Sunshine_UTM_Short_Links::update(), the same checks as renaming
+	 * a short link in wp-admin. The same long link always has one short link, so asking again with
+	 * a new ending renames it and the old ending stops working.
 	 *
 	 * POST (or PUT, PATCH) /wp-json/sunshine-utm/v1/short-links/<ending>
 	 *
@@ -435,10 +440,13 @@ class Sunshine_UTM {
 				'callback'            => array( $this, 'rest_links' ),
 				'permission_callback' => $permission,
 				'args'                => array(
-					'urls' => array(
+					'urls'   => array(
 						'type'     => 'array',
 						'required' => true,
 						'items'    => array( 'type' => 'string' ),
+					),
+					'ending' => array(
+						'type' => 'string',
 					),
 				),
 			)
@@ -476,6 +484,13 @@ class Sunshine_UTM {
 				return new WP_Error( 'not_ready', sprintf( __( 'That shortener isn\'t set up. These are: %s.', 'sunshine-utm-builder' ), implode( ', ', array_keys( Sunshine_UTM_Shortener::ready() ) ) ), array( 'status' => 400 ) );
 			}
 		}
+		$code = Sunshine_UTM_Short_Links::sent_code( $request->get_param( 'ending' ) );
+		if ( is_wp_error( $code ) ) {
+			return $code;
+		}
+		if ( '' !== $code && ( ! $shorten || 'site' !== $service || 1 !== count( $result['rows'] ) ) ) {
+			return new WP_Error( 'code_needs_site', __( 'A custom ending works on one link at a time, shortened by this site.', 'sunshine-utm-builder' ), array( 'status' => 400 ) );
+		}
 		if ( $shorten && Sunshine_UTM_Shortener::is_outside( $service ) && count( $result['rows'] ) > Sunshine_UTM_Bulk::SHORTEN_MAX ) {
 			/* translators: %s: the most links that can be shortened at once. */
 			return new WP_Error( 'too_many_to_shorten', sprintf( __( 'Shortening works on up to %s links at a time.', 'sunshine-utm-builder' ), Sunshine_UTM_Bulk::SHORTEN_MAX ), array( 'status' => 400 ) );
@@ -483,10 +498,33 @@ class Sunshine_UTM {
 		$links = Sunshine_UTM_Bulk::generate(
 			$result['rows'],
 			array(
-				'shorten' => $shorten ? $service : false,
+				'shorten' => $shorten && '' === $code ? $service : false,
 				'check'   => false,
 			)
 		);
+
+		if ( '' !== $code ) {
+			// Check the ending before the short link is made, so a refused ending leaves nothing behind.
+			$tagged  = $links[0]['tagged_url'];
+			$problem = Sunshine_UTM_Short_Links::code_problem( $code, $tagged );
+			if ( $problem ) {
+				$problem->add_data( array( 'status' => 400 ) );
+				return $problem;
+			}
+			$short = Sunshine_UTM_Shortener::shorten( $tagged, 'site' );
+			if ( ! is_wp_error( $short ) ) {
+				$short = Sunshine_UTM_Short_Links::update( basename( (string) wp_parse_url( $short, PHP_URL_PATH ) ), $code, '' );
+			}
+			if ( is_wp_error( $short ) ) {
+				$status = array(
+					'save'    => 500,
+					'missing' => 404,
+				);
+				$short->add_data( array( 'status' => $status[ $short->get_error_code() ] ?? 400 ) );
+				return $short;
+			}
+			$links[0]['short_url'] = Sunshine_UTM_Short_Links::url( $short );
+		}
 
 		$batch_id = 0;
 		if ( $request->get_param( 'save' ) ) {
