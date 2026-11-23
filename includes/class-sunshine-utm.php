@@ -404,7 +404,7 @@ class Sunshine_UTM {
 	 *
 	 * Body: urls (array), source, medium, campaign, term, content, preset (ID), params (object of
 	 * extra parameters), shorten (bool), shortener (site, bitly or rebrandly; defaults to the default
-	 * from Settings), code (a custom ending for the short link, like spring-sale: one link, this
+	 * from Settings), ending (a custom ending for the short link, like spring-sale: one link, this
 	 * site's shortener only), save (bool), name (batch name).
 	 *
 	 * A custom ending goes through Sunshine_UTM_Short_Links::update(), the same checks as renaming
@@ -440,12 +440,12 @@ class Sunshine_UTM {
 				'callback'            => array( $this, 'rest_links' ),
 				'permission_callback' => $permission,
 				'args'                => array(
-					'urls' => array(
+					'urls'   => array(
 						'type'     => 'array',
 						'required' => true,
 						'items'    => array( 'type' => 'string' ),
 					),
-					'code' => array(
+					'ending' => array(
 						'type' => 'string',
 					),
 				),
@@ -484,7 +484,7 @@ class Sunshine_UTM {
 				return new WP_Error( 'not_ready', sprintf( __( 'That shortener isn\'t set up. These are: %s.', 'sunshine-utm-builder' ), implode( ', ', array_keys( Sunshine_UTM_Shortener::ready() ) ) ), array( 'status' => 400 ) );
 			}
 		}
-		$code = Sunshine_UTM_Short_Links::sent_code( $request->get_param( 'code' ) );
+		$code = Sunshine_UTM_Short_Links::sent_code( $request->get_param( 'ending' ) );
 		if ( is_wp_error( $code ) ) {
 			return $code;
 		}
@@ -498,23 +498,32 @@ class Sunshine_UTM {
 		$links = Sunshine_UTM_Bulk::generate(
 			$result['rows'],
 			array(
-				'shorten' => $shorten ? $service : false,
+				'shorten' => $shorten && '' === $code ? $service : false,
 				'check'   => false,
 			)
 		);
 
 		if ( '' !== $code ) {
-			if ( '' === $links[0]['short_url'] ) {
-				return new WP_Error( 'not_shortened', __( 'The short link could not be made, so its ending could not be set.', 'sunshine-utm-builder' ), array( 'status' => 500 ) );
+			// Check the ending before the short link is made, so a refused ending leaves nothing behind.
+			$tagged  = $links[0]['tagged_url'];
+			$problem = Sunshine_UTM_Short_Links::code_problem( $code, $tagged );
+			if ( $problem ) {
+				$problem->add_data( array( 'status' => 400 ) );
+				return $problem;
 			}
-			// A refused ending leaves the link with its made-up code; asking again with another ending renames it.
-			$path    = (string) wp_parse_url( $links[0]['short_url'], PHP_URL_PATH );
-			$renamed = Sunshine_UTM_Short_Links::update( basename( $path ), $code, '' );
-			if ( is_wp_error( $renamed ) ) {
-				$renamed->add_data( array( 'status' => 'save' === $renamed->get_error_code() ? 500 : 400 ) );
-				return $renamed;
+			$short = Sunshine_UTM_Shortener::shorten( $tagged, 'site' );
+			if ( ! is_wp_error( $short ) ) {
+				$short = Sunshine_UTM_Short_Links::update( basename( (string) wp_parse_url( $short, PHP_URL_PATH ) ), $code, '' );
 			}
-			$links[0]['short_url'] = Sunshine_UTM_Short_Links::url( $renamed );
+			if ( is_wp_error( $short ) ) {
+				$status = array(
+					'save'    => 500,
+					'missing' => 404,
+				);
+				$short->add_data( array( 'status' => $status[ $short->get_error_code() ] ?? 400 ) );
+				return $short;
+			}
+			$links[0]['short_url'] = Sunshine_UTM_Short_Links::url( $short );
 		}
 
 		$batch_id = 0;

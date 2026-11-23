@@ -118,7 +118,7 @@ AI tools like Claude connect to them through the [MCP Adapter](https://github.co
 
 = REST API =
 
-Send a POST to `/wp-json/sunshine-utm/v1/links` with a list of `urls` and the tags (`source`, `medium`, `campaign`, `term`, `content`) to get tagged links back. Add `"save": true` to keep them as a batch, or `"shorten": true` for short links. For one link shortened by your own site, `"code": "spring-sale"` gives it a readable ending (yoursite.com/spring-sale) instead of a made-up code. A link only ever has one short link, so a new `code` renames it and the old ending stops working.
+Send a POST to `/wp-json/sunshine-utm/v1/links` with a list of `urls` and the tags (`source`, `medium`, `campaign`, `term`, `content`) to get tagged links back. Add `"save": true` to keep them as a batch, or `"shorten": true` for short links. For one link shortened by your own site, `"ending": "spring-sale"` gives it a readable ending (yoursite.com/spring-sale) instead of a made-up code. A link only ever has one short link, so a new `ending` renames it and the old ending stops working.
 
 To change one of your short links, send a POST to `/wp-json/sunshine-utm/v1/short-links/<ending>` with a new `url`, a new `ending`, or both. Its clicks are kept, and a new ending means the old short link stops working.
 
@@ -230,7 +230,7 @@ If you turn on link checks in Settings, each page a batch links to is requested 
 == Changelog ==
 
 = 1.1.1 =
-* The REST API can give a short link a custom ending with `code`
+* The REST API can give a short link a custom ending with `ending`
 
 = 1.1.0 =
 * AI assistants and scripts can now change your short links: where one goes, its ending, or both, with its clicks kept. There's a new "Update a short link" ability and a REST API endpoint at `/wp-json/sunshine-utm/v1/short-links/<ending>`
