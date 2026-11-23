@@ -101,6 +101,8 @@ class Sunshine_UTM_Shortener {
 	public static function shorten( $url, $service = '' ) {
 		$plugin  = sunshine_utm();
 		$service = '' === (string) $service ? self::default_service() : (string) $service;
+		// is_valid_url() accepts a link typed without https://, so every service gets it with one.
+		$url = Sunshine_UTM_URL_Builder::normalize_url( $url );
 
 		/**
 		 * Shorten with another service.
