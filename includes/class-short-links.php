@@ -447,7 +447,8 @@ class Sunshine_UTM_Short_Links {
 			return new WP_Error( 'reserved', __( 'WordPress uses that address for itself. Choose another ending.', 'sunshine-utm-builder' ) );
 		}
 		$taken_by = self::find( $code );
-		if ( '' !== $taken_by && ( '' === $own_url || $taken_by !== $own_url ) ) {
+		// Compared the way shorten() saves it, with its https://.
+		if ( '' !== $taken_by && ( '' === $own_url || Sunshine_UTM_URL_Builder::normalize_url( $own_url ) !== $taken_by ) ) {
 			return new WP_Error( 'taken', __( 'Another short link already uses that ending.', 'sunshine-utm-builder' ) );
 		}
 		if ( self::is_page( $code ) ) {

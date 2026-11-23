@@ -4,7 +4,7 @@ Tags: utm, utm builder, utm generator, campaign url builder, google analytics
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -228,6 +228,10 @@ If you turn on link checks in Settings, each page a batch links to is requested 
 7. Settings for formatting, team lists, link checks and short links
 
 == Changelog ==
+
+= 1.1.2 =
+* A short link made from a link typed without https:// now goes to that site instead of a page on yours
+* Made-up short link codes skip your pages' addresses even when you use a prefix, so clearing the prefix later can't break them
 
 = 1.1.1 =
 * The REST API can give a short link a custom ending with `ending`
